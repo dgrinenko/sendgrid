@@ -18,18 +18,11 @@ import io.cdap.plugin.common.batch.action.ConditionConfig;
 /**
  * SendgridPostAction implementation of {@link PostAction}.
  *
- * <p>
- *   {@link PostAction} are type of plugins that are executed in the
- *   Batch pipeline at the end of execution. Irrespective of the status of
- *   the pipeline this plugin will be invoked.
- *
- *   This type of plugin can be used to send notifications to external
- *   system or notify other workflows.
- * </p>
+ * Sends an email to the specified email after a pipeline run using SendGrid service.
  */
 @Plugin(type = PostAction.PLUGIN_TYPE)
 @Name("Sendgrid")
-@Description("An example of notification plugin.")
+@Description("Sends an email after pipeline run using SendGrid service")
 public final class SendgridPostAction extends PostAction {
   private final Config config;
 
