@@ -18,6 +18,7 @@ package io.cdap.plugin.sendgrid.common.objects.stats;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.annotations.SerializedName;
 import io.cdap.cdap.api.data.schema.Schema;
+import io.cdap.plugin.sendgrid.common.config.BaseSourceConfig;
 import io.cdap.plugin.sendgrid.common.helpers.BaseObject;
 import io.cdap.plugin.sendgrid.common.helpers.IBaseObject;
 import io.cdap.plugin.sendgrid.common.helpers.ObjectDefinition;
@@ -35,7 +36,9 @@ import java.util.stream.Collectors;
   Name = "GlobalStats",
   Group = DataSourceGroupType.Stats,
   APIUrl = "stats",
-  RequiredArguments = {"start_date"}
+  RequiredArguments = {
+      BaseSourceConfig.PROPERTY_START_DATE
+  }
 )
 public class GlobalStats extends BaseObject implements IBaseObject {
 

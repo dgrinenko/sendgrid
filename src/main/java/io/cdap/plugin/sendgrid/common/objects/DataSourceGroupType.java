@@ -1,0 +1,46 @@
+/*
+ * Copyright © 2019 Cask Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+package io.cdap.plugin.sendgrid.common.objects;
+
+import java.util.Arrays;
+
+/**
+ * Entities groups
+ */
+public enum DataSourceGroupType {
+  Marketing("Marketing Campaign Objects"),
+  Stats("Statistic Objects"),
+  Suppressions("Suppression Objects");
+
+  private String value;
+
+  private static String className = DataSourceGroupType.class.getName();
+
+  DataSourceGroupType(String dataSourceType) {
+    this.value = dataSourceType;
+  }
+
+  public static DataSourceGroupType fromString(String value) {
+    return Arrays.stream(DataSourceGroupType.values())
+      .filter(group -> group.value.equals(value))
+      .findFirst()
+      .orElseThrow(() -> new IllegalStateException(String.format("'%s' is invalid %s", value, className)));
+  }
+
+  public String getValue() {
+    return value;
+  }
+}

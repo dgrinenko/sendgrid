@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "spec-version": "1.0"
+    "spec-version": "1.5"
   },
   "configuration-groups": [
     {
-      "label": "General",
+      "label": "Basic",
       "properties": [
         {
           "name": "referenceName",
@@ -33,20 +33,20 @@
         {
           "name": "sendGridApiKey",
           "label": "API Key",
-          "widget-type": "textbox",
-          "default": ""
+          "widget-type": "securekey-text",
+          "widget-attributes": {
+            "placeholder": "SendGrid API Key"
+          }
         },
         {
           "name": "username",
           "label": "Username",
-          "widget-type": "textbox",
-          "default": ""
+          "widget-type": "textbox"
         },
         {
           "name": "password",
           "label": "Password",
-          "widget-type": "password",
-          "default": ""
+          "widget-type": "password"
         },
         {
           "name": "dataSourceTypes",
@@ -97,8 +97,7 @@
                 "label": "Single Sends"
               }
             ],
-            "delimiter": ",",
-            "default": ""
+            "delimiter": ","
           }
         },
         {
@@ -136,8 +135,7 @@
                 "label": "Group Unsubscribes"
               }
             ],
-            "delimiter": ",",
-            "default": ""
+            "delimiter": ","
           }
         },
         {
@@ -159,8 +157,7 @@
                 "label": "Group Unsubscribes"
               }
             ],
-            "delimiter": ",",
-            "default": ""
+            "delimiter": ","
           }
         },
         {
@@ -318,13 +315,19 @@
           "name": "startDate",
           "label": "Start Date",
           "widget-type": "textbox",
-          "default": ""
+          "placeholder": "YYYY-MM-DD"
         },
         {
           "name": "endDate",
           "label": "End Date",
           "widget-type": "textbox",
-          "defaut": ""
+          "placeholder": "YYYY-MM-DD"
+        },
+        {
+          "name": "statCategories",
+          "label": "Statistic Categories",
+          "widget-type": "textbox",
+          "placeholder": "spam,..."
         }
       ]
     }
