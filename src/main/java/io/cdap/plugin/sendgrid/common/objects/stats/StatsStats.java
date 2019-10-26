@@ -17,9 +17,11 @@ package io.cdap.plugin.sendgrid.common.objects.stats;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.annotations.SerializedName;
+import io.cdap.cdap.api.data.schema.Schema;
 import io.cdap.plugin.sendgrid.common.helpers.BaseObject;
 import io.cdap.plugin.sendgrid.common.helpers.IBaseObject;
 import io.cdap.plugin.sendgrid.common.helpers.ObjectDefinition;
+import io.cdap.plugin.sendgrid.common.helpers.ObjectFieldDefinition;
 
 import java.util.Map;
 
@@ -32,12 +34,15 @@ import java.util.Map;
 )
 public class StatsStats extends BaseObject implements IBaseObject {
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.MAP, NestedClass = "MetricStats")
   @SerializedName("metrics")
   private MetricStats metrics;
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.STRING)
   @SerializedName("name")
   private String name;
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.STRING)
   @SerializedName("type")
   private String type;
 

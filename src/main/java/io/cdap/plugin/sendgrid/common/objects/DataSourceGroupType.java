@@ -21,9 +21,9 @@ import java.util.Arrays;
  * Entities groups
  */
 public enum DataSourceGroupType {
-  Marketing("Marketing Campaign Objects"),
-  Stats("Statistic Objects"),
-  Suppressions("Suppression Objects");
+  Marketing("MarketingCampaign"),
+  Stats("Statistic"),
+  Suppressions("suppression");
 
   private String value;
 

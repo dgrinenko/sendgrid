@@ -44,7 +44,7 @@ public class SendGridRecordReader extends RecordReader<NullWritable, IBaseObject
   public void initialize(InputSplit split, TaskAttemptContext context) throws IOException, InterruptedException {
     Configuration conf = context.getConfiguration();
     String serializedConfig = conf.get(SendGridInputFormatProvider.PROPERTY_CONFIG_JSON);
-    SendGridBatchSourceConfig sgConfig  = gson.fromJson(serializedConfig, SendGridBatchSourceConfig.class);
+    SendGridBatchConfig sgConfig  = gson.fromJson(serializedConfig, SendGridBatchConfig.class);
 
     SendGridClient client = new SendGridClient(sgConfig);
 

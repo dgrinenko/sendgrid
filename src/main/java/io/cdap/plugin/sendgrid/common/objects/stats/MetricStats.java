@@ -17,9 +17,11 @@ package io.cdap.plugin.sendgrid.common.objects.stats;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.annotations.SerializedName;
+import io.cdap.cdap.api.data.schema.Schema;
 import io.cdap.plugin.sendgrid.common.helpers.BaseObject;
 import io.cdap.plugin.sendgrid.common.helpers.IBaseObject;
 import io.cdap.plugin.sendgrid.common.helpers.ObjectDefinition;
+import io.cdap.plugin.sendgrid.common.helpers.ObjectFieldDefinition;
 
 import java.util.Map;
 
@@ -34,62 +36,77 @@ import javax.annotation.Nullable;
 )
 public class MetricStats extends BaseObject implements IBaseObject {
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.INT)
   @Nullable
   @SerializedName("blocks")
   private Integer blocks;
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.INT)
   @Nullable
   @SerializedName("bounce_drops")
   private Integer bounceDrops;
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.INT)
   @Nullable
   @SerializedName("bounces")
   private Integer bounces;
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.INT)
   @Nullable
   @SerializedName("clicks")
   private Integer clicks;
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.INT)
   @Nullable
   @SerializedName("deferred")
   private Integer deferred;
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.INT)
   @Nullable
   @SerializedName("invalid_emails")
   private Integer invalidEmails;
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.INT)
   @Nullable
   @SerializedName("opens")
   private Integer opens;
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.INT)
   @Nullable
   @SerializedName("processed")
   private Integer processed;
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.INT)
   @Nullable
   @SerializedName("requests")
   private Integer requests;
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.INT)
   @Nullable
   @SerializedName("spam_report_drops")
   private Integer spamReportDrops;
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.INT)
   @Nullable
   @SerializedName("spam_reports")
   private Integer spamReports;
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.INT)
   @Nullable
   @SerializedName("unique_clicks")
   private Integer uniqueClicks;
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.INT)
   @Nullable
   @SerializedName("unique_opens")
   private Integer uniqueOpens;
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.INT)
   @Nullable
   @SerializedName("unsubscribe_drops")
   private Integer unsubscribeDrops;
 
+  @ObjectFieldDefinition(FieldType = Schema.Type.INT)
   @Nullable
   @SerializedName("unsubscribes")
   private Integer unsubscribes;

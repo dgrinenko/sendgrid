@@ -20,8 +20,10 @@ import io.cdap.cdap.api.data.schema.Schema;
 import io.cdap.plugin.sendgrid.common.helpers.EmptyObject;
 import io.cdap.plugin.sendgrid.common.helpers.IBaseObject;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Record transformer
@@ -39,6 +41,17 @@ public class SendGridTransformer {
     } else if (v instanceof IBaseObject) {
       Schema mapSchema = Objects.requireNonNull(schema.getField(k)).getSchema();
       builder.set(k, transform((IBaseObject) v, mapSchema));
+    } else if (v instanceof List) {
+      Schema componentSchema = Objects.requireNonNull(schema.getField(k)).getSchema().getComponentSchema();
+      if (componentSchema == null) {
+        throw new IllegalArgumentException(String.format("Unable to extract schema for the field '%s'", k));
+      }
+      Object values = ((List) v).stream().map(arrItem -> {
+        StructuredRecord.Builder itemBuilder = StructuredRecord.builder(Objects.requireNonNull(componentSchema));
+        transformValue(k, arrItem, componentSchema, itemBuilder);
+        return builder.build();
+      }).collect(Collectors.toList());
+      builder.set(k, values);
     } else {
       builder.set(k, v);
     }

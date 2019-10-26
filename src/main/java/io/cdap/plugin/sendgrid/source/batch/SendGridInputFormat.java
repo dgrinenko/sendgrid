@@ -45,7 +45,7 @@ public class SendGridInputFormat extends InputFormat {
 
     Configuration conf = context.getConfiguration();
     String serializedConfig = conf.get(SendGridInputFormatProvider.PROPERTY_CONFIG_JSON);
-    SendGridBatchSourceConfig sgConfig  = gson.fromJson(serializedConfig, SendGridBatchSourceConfig.class);
+    SendGridBatchConfig sgConfig  = gson.fromJson(serializedConfig, SendGridBatchConfig.class);
 
     return (sgConfig.isMultiObjectMode())
       ? new SendGridMultiRecordReader()

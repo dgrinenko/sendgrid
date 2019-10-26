@@ -242,6 +242,9 @@ public class ObjectHelper {
       fieldInfos = objectInfo.getFieldDefinitions();
     } else {
       fieldInfos = objectInfo.getFieldsDefinitions(requestedFields);
+      if (fieldInfos.isEmpty()) {  // if user selected no fields belonging to current object, show all fields
+        fieldInfos = objectInfo.getFieldDefinitions();
+      }
     }
 
     List<Schema.Field> cdapFields = fieldInfos.stream()
@@ -256,6 +259,18 @@ public class ObjectHelper {
            return Schema.Field.of(x.getName(),
               Schema.recordOf(x.getName(), Objects.requireNonNull(nestedFields))
            );
+        }
+        if (x.getType() == Schema.Type.ARRAY) {
+          if (Strings.isNullOrEmpty(x.getNestedClassName())) {
+            throw new IllegalArgumentException(String.format("Nested class is not declared for the field %s",
+              x.getName()));
+          }
+          List<Schema.Field> nestedFields = buildSchema(x.getNestedClassName(), requestedFields).getFields();
+          return Schema.Field.of(x.getName(),
+            Schema.arrayOf(
+              Schema.recordOf(x.getName(), Objects.requireNonNull(nestedFields))
+            )
+          );
         }
         return Schema.Field.of(x.getName(), Schema.nullableOf(Schema.of(x.getType())));
       })

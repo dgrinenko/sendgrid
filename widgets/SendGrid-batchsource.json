@@ -55,15 +55,15 @@
           "widget-attributes": {
             "options": [
               {
-                "id": "campaigns",
+                "id": "MarketingCampaign",
                 "label": "Marketing Campaign Objects"
               },
               {
-                "id": "stats",
+                "id": "Statistic",
                 "label": "Statistic Objects"
               },
               {
-                "id": "suppressions",
+                "id": "suppression",
                 "label": "Suppression Objects"
               }
             ],
@@ -116,23 +116,7 @@
               },
               {
                 "id": "GlobalStats",
-                "label": "Advanced Stats"
-              },
-              {
-                "id": "_suppressions",
-                "label": "Suppression Objects"
-              },
-              {
-                "id": "Bounces",
-                "label": "Bounces"
-              },
-              {
-                "id": "GlobalUnsubscribes",
-                "label": "Global Unsubscribes"
-              },
-              {
-                "id": "GroupUnsubscribes",
-                "label": "Group Unsubscribes"
+                "label": "Global Stats"
               }
             ],
             "delimiter": ","
@@ -312,13 +296,13 @@
           }
         },
         {
-          "name": "startDate",
+          "name": "start_date",
           "label": "Start Date",
           "widget-type": "textbox",
           "placeholder": "YYYY-MM-DD"
         },
         {
-          "name": "endDate",
+          "name": "end_date",
           "label": "End Date",
           "widget-type": "textbox",
           "placeholder": "YYYY-MM-DD"

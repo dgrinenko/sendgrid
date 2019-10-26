@@ -15,13 +15,20 @@
  */
 package io.cdap.plugin.sendgrid.source.batch;
 
-import io.cdap.plugin.sendgrid.common.config.BaseSourceConfig;
+import io.cdap.cdap.etl.api.FailureCollector;
+import io.cdap.plugin.sendgrid.common.config.BaseConfigValidator;
 
 /**
- * SendGrid Source Plugin configuration
+ * Validates configuration
  */
-public class SendGridBatchSourceConfig extends BaseSourceConfig {
-  public SendGridBatchSourceConfig(String referenceName) {
-    super(referenceName);
+public class SendGridBatchConfigValidator extends BaseConfigValidator {
+  public SendGridBatchConfigValidator(FailureCollector failureCollector, SendGridBatchConfig config) {
+    super(failureCollector, config);
   }
+
+  @Override
+  public void validate() {
+    super.validate();
+  }
+
 }

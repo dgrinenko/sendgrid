@@ -46,7 +46,7 @@ public class SendGridMultiRecordReader extends RecordReader<NullWritable, IBaseO
   @Override
   public void initialize(InputSplit split, TaskAttemptContext context) throws IOException, InterruptedException {
     String serializedConfig = context.getConfiguration().get(SendGridInputFormatProvider.PROPERTY_CONFIG_JSON);
-    SendGridBatchSourceConfig sgConfig  = gson.fromJson(serializedConfig, SendGridBatchSourceConfig.class);
+    SendGridBatchConfig sgConfig  = gson.fromJson(serializedConfig, SendGridBatchConfig.class);
     SendGridClient client = new SendGridClient(sgConfig);
     ImmutableMap.Builder<String, Iterator<IBaseObject>> iterators = new ImmutableMap.Builder<>();
 

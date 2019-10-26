@@ -46,9 +46,9 @@ import java.util.stream.Collectors;
 public class SendGridBatchSource extends BatchSource<NullWritable, IBaseObject, StructuredRecord> {
   public static final String NAME = "SendGrid";
 
-  private final SendGridBatchSourceConfig config;
+  private final SendGridBatchConfig config;
 
-  public SendGridBatchSource(SendGridBatchSourceConfig config) {
+  public SendGridBatchSource(SendGridBatchConfig config) {
     this.config = config;
   }
 

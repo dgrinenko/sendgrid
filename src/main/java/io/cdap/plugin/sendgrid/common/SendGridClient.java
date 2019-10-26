@@ -18,6 +18,7 @@ package io.cdap.plugin.sendgrid.common;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -26,13 +27,14 @@ import io.cdap.plugin.sendgrid.common.helpers.IBaseObject;
 import io.cdap.plugin.sendgrid.common.helpers.ObjectInfo;
 import io.cdap.plugin.sendgrid.common.objects.BasicResult;
 import io.cdap.plugin.sendgrid.common.objects.SendGridAuthType;
-import io.cdap.plugin.sendgrid.source.batch.SendGridBatchSourceConfig;
+import io.cdap.plugin.sendgrid.source.batch.SendGridBatchConfig;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,6 +45,7 @@ import javax.annotation.Nullable;
  * SendGrid Client
  */
 public class SendGridClient {
+  private static final String CONNECTION_CHECK_ENDPOINT = "alerts";
 
   /**
    * Extended version of the original SendGrid API wrapper with added support of basic auth
@@ -77,7 +80,7 @@ public class SendGridClient {
     gson = new GsonBuilder().create();
   }
 
-  public SendGridClient(SendGridBatchSourceConfig config) {
+  public SendGridClient(SendGridBatchConfig config) {
     this();
     if (config.getAuthType() == SendGridAuthType.API) {
       sendGrid = new SendGridAPIClient(config.getSendGridApiKey());
@@ -123,10 +126,35 @@ public class SendGridClient {
     try {
       response = sendGrid.api(request);
     } catch (IOException e) {
-      throw new IOException(String.format("Request to SendGrid API \"%s\"", endpoint), e);
+      String serverMessage = String.format("Request to SendGrid API \"%s\"", endpoint);
+      // Parse error response from the server
+      if (e.getMessage().contains("Body:")) {
+        String[] messages = e.getMessage().split("Body:");
+        HashMap<String, List<HashMap<String, String>>> errors = gson.fromJson(
+          messages[1],
+          new TypeToken<HashMap<String, List<HashMap<String, String>>>>() { }.getType()
+        );
+        if (errors.containsKey("errors")) {
+          String description = errors.get("errors").stream()
+            .filter(x -> x.containsKey("message"))
+            .map(x -> x.get("message"))
+            .collect(Collectors.joining(";"));
+
+          serverMessage = String.format("%s, API response: %s", messages[0], description);
+        }
+      }
+      throw new IOException(serverMessage, e);
     }
 
     return response.getBody();
+  }
+
+  /**
+   * Checks connection to the service by testing API endpoint, in case
+   * of exception would be generated {@link IOException}
+   */
+  public void checkConnection() throws IOException {
+      makeApiRequest(Method.GET, CONNECTION_CHECK_ENDPOINT, null);
   }
 
   /**

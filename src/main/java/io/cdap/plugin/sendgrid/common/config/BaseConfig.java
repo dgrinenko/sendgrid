@@ -39,7 +39,7 @@ import javax.annotation.Nullable;
 /**
  * Provides all required configuration for reading SendGrid information
  */
-public class BaseSourceConfig extends ReferencePluginConfig {
+public class BaseConfig extends ReferencePluginConfig {
   public static final String PROPERTY_AUTH_TYPE = "authType";
   public static final String PROPERTY_SENDGRID_API_KEY = "sendGridApiKey";
   public static final String PROPERTY_AUTH_USERNAME = "username";
@@ -52,8 +52,8 @@ public class BaseSourceConfig extends ReferencePluginConfig {
 
   public static final String PROPERTY_DATA_SOURCE_FIELDS = "dataSourceFields";
   public static final String PROPERTY_STAT_CATEGORIES = "statCategories";
-  public static final String PROPERTY_START_DATE = "startDate";
-  public static final String PROPERTY_END_DATE = "endDate";
+  public static final String PROPERTY_START_DATE = "start_date";
+  public static final String PROPERTY_END_DATE = "end_date";
 
   @Name(PROPERTY_AUTH_TYPE)
   @Description("The way, how user would like to be authenticated to the SendGrid account")
@@ -134,8 +134,15 @@ public class BaseSourceConfig extends ReferencePluginConfig {
    *
    * @param referenceName uniquely identify source/sink for lineage, annotating metadata, etc.
    */
-  public BaseSourceConfig(String referenceName) {
+  public BaseConfig(String referenceName) {
     super(referenceName);
+  }
+
+  /**
+   * Validate configuration for the issues
+   */
+  protected void validate(FailureCollector failureCollector) {
+     new BaseConfigValidator(failureCollector, this).validate();
   }
 
   /**
@@ -223,10 +230,6 @@ public class BaseSourceConfig extends ReferencePluginConfig {
     return builder.build();
   }
 
-  public void validate(FailureCollector failureCollector) {
-
-  }
-
   /**
    * Client authentication way
    */
@@ -270,5 +273,12 @@ public class BaseSourceConfig extends ReferencePluginConfig {
   @Nullable
   public String getEndDate() {
     return endDate;
+  }
+
+  public List<String> getDataSourceTypes() {
+    if (!Strings.isNullOrEmpty(dataSourceTypes)) {
+      return Arrays.asList(dataSourceTypes.split(","));
+    }
+    return Collections.emptyList();
   }
 }

@@ -30,7 +30,7 @@ public class SendGridInputFormatProvider implements InputFormatProvider {
   private static final Gson gson = new GsonBuilder().create();
   private final Map<String, String> conf;
 
-  SendGridInputFormatProvider(SendGridBatchSourceConfig config) {
+  SendGridInputFormatProvider(SendGridBatchConfig config) {
     this.conf = new ImmutableMap.Builder<String, String>()
       .put(PROPERTY_CONFIG_JSON, gson.toJson(config))
       .build();
