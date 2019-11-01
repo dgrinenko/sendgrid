@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.cdap.plugin.sendgrid.source.batch;
+package io.cdap.plugin.sendgrid.batch.source;
 
 import io.cdap.cdap.api.data.format.StructuredRecord;
 import io.cdap.cdap.api.data.schema.Schema;
@@ -26,9 +26,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Record transformer
+ * {@link IBaseObject} to {@link StructuredRecord} transformer
  */
-public class SendGridTransformer {
+public class SendGridSourceTransformer {
 
   @SuppressWarnings("unchecked")
   private static void transformValue(String k, Object v, Schema schema, StructuredRecord.Builder builder) {
@@ -46,11 +46,8 @@ public class SendGridTransformer {
       if (componentSchema == null) {
         throw new IllegalArgumentException(String.format("Unable to extract schema for the field '%s'", k));
       }
-      Object values = ((List) v).stream().map(arrItem -> {
-        StructuredRecord.Builder itemBuilder = StructuredRecord.builder(Objects.requireNonNull(componentSchema));
-        transformValue(k, arrItem, componentSchema, itemBuilder);
-        return builder.build();
-      }).collect(Collectors.toList());
+      Object values = ((List) v).stream()
+          .map(arrItem -> transform((Map<String, Object>) arrItem, componentSchema)).collect(Collectors.toList());
       builder.set(k, values);
     } else {
       builder.set(k, v);

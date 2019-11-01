@@ -41,7 +41,12 @@ public @interface ObjectDefinition {
     /**
      * Describes object, designed to be used as part of another objects
      */
-    NESTED
+    NESTED,
+
+    /**
+     * Custom standalone object
+     */
+    CUSTOM
   }
 
   /**
@@ -52,7 +57,7 @@ public @interface ObjectDefinition {
   /**
    *  One of the {@link DataSourceGroupType}
    */
-  DataSourceGroupType Group() default DataSourceGroupType.Marketing;
+  DataSourceGroupType Group() default DataSourceGroupType.Other;
 
   /**
    * Relative API URI for the Entity

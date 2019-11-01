@@ -23,11 +23,13 @@ import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
+import io.cdap.plugin.sendgrid.common.config.BaseConfig;
 import io.cdap.plugin.sendgrid.common.helpers.IBaseObject;
+import io.cdap.plugin.sendgrid.common.helpers.ObjectHelper;
 import io.cdap.plugin.sendgrid.common.helpers.ObjectInfo;
 import io.cdap.plugin.sendgrid.common.objects.BasicResult;
 import io.cdap.plugin.sendgrid.common.objects.SendGridAuthType;
-import io.cdap.plugin.sendgrid.source.batch.SendGridBatchConfig;
+import io.cdap.plugin.sendgrid.common.objects.mail.SendGridMail;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
@@ -80,7 +82,7 @@ public class SendGridClient {
     gson = new GsonBuilder().create();
   }
 
-  public SendGridClient(SendGridBatchConfig config) {
+  public SendGridClient(BaseConfig config) {
     this();
     if (config.getAuthType() == SendGridAuthType.API) {
       sendGrid = new SendGridAPIClient(config.getSendGridApiKey());
@@ -108,15 +110,20 @@ public class SendGridClient {
    * @param method the HTTP method to use
    * @param endpoint relative uri to be queried
    * @param arguments arguments for the query
+   * @param data
    * @return query body
    * @throws IOException if any issue with query the API happen
    */
-  private String makeApiRequest(Method method, String endpoint, @Nullable Map<String, String> arguments)
-    throws IOException {
+  private String makeApiRequest(Method method, String endpoint, @Nullable Map<String, String> arguments,
+                                String data) throws IOException {
 
     Request request = new Request();
     request.setMethod(method);
     request.setEndpoint(endpoint);
+
+    if (method == Method.POST && !Strings.isNullOrEmpty(data)) {
+      request.setBody(data);
+    }
 
     if (arguments != null && !arguments.isEmpty()) {
       arguments.forEach(request::addQueryParam);
@@ -154,7 +161,7 @@ public class SendGridClient {
    * of exception would be generated {@link IOException}
    */
   public void checkConnection() throws IOException {
-      makeApiRequest(Method.GET, CONNECTION_CHECK_ENDPOINT, null);
+      makeApiRequest(Method.GET, CONNECTION_CHECK_ENDPOINT, null, null);
   }
 
   /**
@@ -201,6 +208,18 @@ public class SendGridClient {
   }
 
   /**
+   * Post a SendGrid mail
+   *
+   * @param mail Mail object to send
+   */
+  public void  sendMail(SendGridMail mail) throws IOException {
+     ObjectInfo objectInfo = ObjectHelper.getObjectInfo(SendGridMail.class);
+     String data = gson.toJson(mail);
+
+     makeApiRequest(Method.POST, objectInfo.getSendGridAPIUrl(), null, data);
+  }
+
+  /**
    * Query SendGrid API using plugin meta objects
    *
    * @param objectInfo objects definition
@@ -215,7 +234,7 @@ public class SendGridClient {
     checkIncomingArguments(objectInfo, arguments);
 
     String endpoint = objectInfo.getSendGridAPIUrl();
-    String response = makeApiRequest(Method.GET, endpoint, arguments);
+    String response = makeApiRequest(Method.GET, endpoint, arguments, null);
     Class clazz = objectInfo.getObjectClass();
 
     if (objectInfo.getApiResponseType() == APIResponseType.RESULT) {

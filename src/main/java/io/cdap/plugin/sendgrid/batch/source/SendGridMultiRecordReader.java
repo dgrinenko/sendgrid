@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.cdap.plugin.sendgrid.source.batch;
+package io.cdap.plugin.sendgrid.batch.source;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
@@ -44,9 +44,9 @@ public class SendGridMultiRecordReader extends RecordReader<NullWritable, IBaseO
   private Map<String, IBaseObject> currentRecords;
 
   @Override
-  public void initialize(InputSplit split, TaskAttemptContext context) throws IOException, InterruptedException {
+  public void initialize(InputSplit split, TaskAttemptContext context) {
     String serializedConfig = context.getConfiguration().get(SendGridInputFormatProvider.PROPERTY_CONFIG_JSON);
-    SendGridBatchConfig sgConfig  = gson.fromJson(serializedConfig, SendGridBatchConfig.class);
+    SendGridSourceConfig sgConfig  = gson.fromJson(serializedConfig, SendGridSourceConfig.class);
     SendGridClient client = new SendGridClient(sgConfig);
     ImmutableMap.Builder<String, Iterator<IBaseObject>> iterators = new ImmutableMap.Builder<>();
 
@@ -63,7 +63,7 @@ public class SendGridMultiRecordReader extends RecordReader<NullWritable, IBaseO
   }
 
   @Override
-  public boolean nextKeyValue() throws IOException, InterruptedException {
+  public boolean nextKeyValue() {
     currentRecords.clear();
 
     return recordIterators.entrySet().stream()
@@ -78,12 +78,12 @@ public class SendGridMultiRecordReader extends RecordReader<NullWritable, IBaseO
   }
 
   @Override
-  public NullWritable getCurrentKey() throws IOException, InterruptedException {
+  public NullWritable getCurrentKey() {
     return null;
   }
 
   @Override
-  public IBaseObject getCurrentValue() throws IOException, InterruptedException {
+  public IBaseObject getCurrentValue() {
     MultiObject multiObject = new MultiObject();
     currentRecords.forEach(multiObject::addObject);
 
@@ -91,12 +91,12 @@ public class SendGridMultiRecordReader extends RecordReader<NullWritable, IBaseO
   }
 
   @Override
-  public float getProgress() throws IOException, InterruptedException {
+  public float getProgress() {
     return 0.0f;
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() {
    // no-op
   }
 }

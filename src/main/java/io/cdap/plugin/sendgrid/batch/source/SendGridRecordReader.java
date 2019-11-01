@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.cdap.plugin.sendgrid.source.batch;
+package io.cdap.plugin.sendgrid.batch.source;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -41,10 +41,10 @@ public class SendGridRecordReader extends RecordReader<NullWritable, IBaseObject
   private IBaseObject currentRecord;
 
   @Override
-  public void initialize(InputSplit split, TaskAttemptContext context) throws IOException, InterruptedException {
+  public void initialize(InputSplit split, TaskAttemptContext context) throws IOException {
     Configuration conf = context.getConfiguration();
     String serializedConfig = conf.get(SendGridInputFormatProvider.PROPERTY_CONFIG_JSON);
-    SendGridBatchConfig sgConfig  = gson.fromJson(serializedConfig, SendGridBatchConfig.class);
+    SendGridSourceConfig sgConfig  = gson.fromJson(serializedConfig, SendGridSourceConfig.class);
 
     SendGridClient client = new SendGridClient(sgConfig);
 
@@ -58,7 +58,7 @@ public class SendGridRecordReader extends RecordReader<NullWritable, IBaseObject
   }
 
   @Override
-  public boolean nextKeyValue() throws IOException, InterruptedException {
+  public boolean nextKeyValue() {
     boolean recordHasNext = recordIterator.hasNext();
 
     if (recordHasNext) {
@@ -68,22 +68,22 @@ public class SendGridRecordReader extends RecordReader<NullWritable, IBaseObject
   }
 
   @Override
-  public NullWritable getCurrentKey() throws IOException, InterruptedException {
+  public NullWritable getCurrentKey() {
     return null;
   }
 
   @Override
-  public IBaseObject getCurrentValue() throws IOException, InterruptedException {
+  public IBaseObject getCurrentValue() {
     return currentRecord;
   }
 
   @Override
-  public float getProgress() throws IOException, InterruptedException {
+  public float getProgress() {
     return 0.0f;
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() {
    // no-op
   }
 }

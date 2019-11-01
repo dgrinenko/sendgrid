@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.cdap.plugin.sendgrid.source.batch;
+package io.cdap.plugin.sendgrid.batch.source;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
@@ -30,7 +30,7 @@ public class SendGridInputFormatProvider implements InputFormatProvider {
   private static final Gson gson = new GsonBuilder().create();
   private final Map<String, String> conf;
 
-  SendGridInputFormatProvider(SendGridBatchConfig config) {
+  SendGridInputFormatProvider(SendGridSourceConfig config) {
     this.conf = new ImmutableMap.Builder<String, String>()
       .put(PROPERTY_CONFIG_JSON, gson.toJson(config))
       .build();

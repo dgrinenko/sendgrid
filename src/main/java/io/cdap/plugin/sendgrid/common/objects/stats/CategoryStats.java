@@ -18,7 +18,7 @@ package io.cdap.plugin.sendgrid.common.objects.stats;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.annotations.SerializedName;
 import io.cdap.cdap.api.data.schema.Schema;
-import io.cdap.plugin.sendgrid.common.config.BaseConfig;
+import io.cdap.plugin.sendgrid.batch.source.SendGridSourceConfig;
 import io.cdap.plugin.sendgrid.common.helpers.BaseObject;
 import io.cdap.plugin.sendgrid.common.helpers.IBaseObject;
 import io.cdap.plugin.sendgrid.common.helpers.ObjectDefinition;
@@ -37,8 +37,8 @@ import java.util.stream.Collectors;
   Group = DataSourceGroupType.Stats,
   APIUrl = "categories/stats",
   RequiredArguments = {
-      BaseConfig.PROPERTY_START_DATE,
-      BaseConfig.PROPERTY_STAT_CATEGORIES
+      SendGridSourceConfig.PROPERTY_START_DATE,
+      SendGridSourceConfig.PROPERTY_STAT_CATEGORIES
   }
 )
 public class CategoryStats extends BaseObject implements IBaseObject {

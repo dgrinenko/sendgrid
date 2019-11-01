@@ -19,27 +19,17 @@ import com.google.common.base.Strings;
 import io.cdap.cdap.etl.api.FailureCollector;
 import io.cdap.cdap.etl.api.validation.ValidationFailure;
 import io.cdap.plugin.sendgrid.common.SendGridClient;
-import io.cdap.plugin.sendgrid.common.helpers.ObjectHelper;
-import io.cdap.plugin.sendgrid.common.helpers.ObjectInfo;
-import io.cdap.plugin.sendgrid.common.objects.DataSourceGroupType;
 import io.cdap.plugin.sendgrid.common.objects.SendGridAuthType;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Validates configuration
  */
-public class BaseConfigValidator {
+public abstract class BaseConfigValidator {
   protected FailureCollector failureCollector;
   protected SendGridClient client = null;
   private BaseConfig config;
-
-  private static Pattern datePattern = Pattern.compile("(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{1,2})");
 
   public BaseConfigValidator(FailureCollector failureCollector, BaseConfig config) {
     this.failureCollector = failureCollector;
@@ -53,12 +43,6 @@ public class BaseConfigValidator {
       failureCollector.addFailure(String.format("Wrong authentication method selected: %s", e.getMessage()), null)
         .withConfigProperty(BaseConfig.PROPERTY_AUTH_TYPE);
     }
-  }
-
-  private Stream<ObjectInfo> getObjectsStream() {
-    return config.getDataSource().stream()
-      .filter(x -> !Strings.isNullOrEmpty(x))
-      .map(ObjectHelper::getObjectInfo);
   }
 
   private void checkAuthData() {
@@ -95,102 +79,6 @@ public class BaseConfigValidator {
     }
   }
 
-  private void checkCategoriesSelection() {
-    if (config.getDataSourceTypes().isEmpty()) {
-      failureCollector.addFailure("Object categories are not set", null)
-        .withConfigProperty(BaseConfig.PROPERTY_DATA_SOURCE_TYPES);
-    }
-
-    config.getDataSourceTypes()
-      .forEach(x -> {
-        try {
-          DataSourceGroupType.fromString(x);
-        } catch (IllegalStateException e) {
-          failureCollector.addFailure(
-            String.format("Unknown '%s' data source type: %s", x , e.getMessage()), null)
-            .withStacktrace(e.getStackTrace());
-        }
-      });
-  }
-
-  private void checkObjectsSelection() {
-    List<ObjectInfo> objects =  getObjectsStream().collect(Collectors.toList());
-    List<DataSourceGroupType> categories = config.getDataSourceTypes().stream()
-      .map(DataSourceGroupType::fromString)
-      .collect(Collectors.toList());
-
-    categories.forEach(category -> {
-      if (objects.stream().noneMatch(x -> x.getDataSourceGroupType() == category)) {
-        failureCollector.addFailure(
-          String.format("No objects selected for the category: %s", category.name()), null)
-          .withConfigProperty(BaseConfig.PROPERTY_DATA_SOURCE);
-      }
-    });
-  }
-
-  private void checkFieldSelection() {
-    List<ObjectInfo> objects = getObjectsStream().collect(Collectors.toList());
-    List<String> fields = config.getFields();
-
-    objects.forEach(object -> {
-      if (object.getFieldsDefinitions(fields).isEmpty()) {
-        failureCollector.addFailure(
-          String.format("No fields selected for object '%s'", object.getCdapObjectName()), null)
-          .withConfigProperty(BaseConfig.PROPERTY_DATA_SOURCE_FIELDS);
-      }
-    });
-  }
-
-  private void checkRequiredInputProperties() {
-  getObjectsStream()
-      .flatMap(obj -> obj.getRequiredArguments().stream())
-      .filter(arg -> !config.getRequestArguments().containsKey(arg))
-      .forEach(arg -> {
-        failureCollector.addFailure(
-          String.format("Argument %s cannot be empty", arg), null)
-          .withConfigProperty(arg);
-      });
-  }
-
-  private void checkDateFormat(String date, String field) {
-    if (!Strings.isNullOrEmpty(date)) {
-      Matcher matcher = datePattern.matcher(date);
-      if (!matcher.find()) {
-        failureCollector.addFailure("Input format should math YYYY-MM-DD", null)
-          .withConfigProperty(field);
-      } else {
-        Integer month;
-        Integer day;
-
-        try {
-         month = Integer.valueOf(matcher.group("month"));
-         day = Integer.valueOf(matcher.group("day"));
-        } catch (NumberFormatException e) {
-          failureCollector.addFailure("Input format should math YYYY-MM-DD", null)
-            .withConfigProperty(field);
-          return;
-        }
-
-        if (month < 1 || month > 12) {
-          failureCollector.addFailure(
-            "Input format should math YYYY-MM-DD and MM should be in range from 1 to 12", null)
-            .withConfigProperty(field);
-        }
-
-        if (day < 1 || day > 31) {
-          failureCollector.addFailure(
-            "Input format should math YYYY-MM-DD and DD should be in range from 1 to 31", null)
-            .withConfigProperty(field);
-        }
-      }
-    }
-  }
-
-  private void checkDateArguments() {
-    checkDateFormat(config.getStartDate(), BaseConfig.PROPERTY_START_DATE);
-    checkDateFormat(config.getEndDate(), BaseConfig.PROPERTY_END_DATE);
-  }
-
   private void checkClientConnectivity() {
     try {
       client.checkConnection();
@@ -210,21 +98,32 @@ public class BaseConfigValidator {
     }
   }
 
+  /**
+   * Perform validation tasks which did not involve API Client usage
+   */
+  public abstract void doValidation();
+
   public void validate() {
     client = null;
 
-    checkAuthType();
-    checkAuthData();
-    checkCategoriesSelection();
-    checkObjectsSelection();
-    checkFieldSelection();
-    checkRequiredInputProperties();
-    checkDateArguments();
+    if (!config.containsMacro(BaseConfig.PROPERTY_AUTH_TYPE)) {
+      checkAuthType();
+    }
+    if (!config.containsMacro(BaseConfig.PROPERTY_AUTH_USERNAME) &&
+        !config.containsMacro(BaseConfig.PROPERTY_AUTH_PASSWORD) &&
+        !config.containsMacro(BaseConfig.PROPERTY_SENDGRID_API_KEY)) {
+      checkAuthData();
+    }
 
-    if (client != null) {  // client could be not constructed, if any of checkAuth tests failed
+    doValidation();
+
+    // client could be not constructed, if any of checkAuth tests failed
+    if (client != null
+        && (!config.containsMacro(BaseConfig.PROPERTY_AUTH_USERNAME) &&
+            !config.containsMacro(BaseConfig.PROPERTY_AUTH_PASSWORD) &&
+            !config.containsMacro(BaseConfig.PROPERTY_SENDGRID_API_KEY)
+        )) {
       checkClientConnectivity();
     }
   }
-
-
 }

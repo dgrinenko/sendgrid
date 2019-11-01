@@ -19,6 +19,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.annotations.SerializedName;
 import io.cdap.cdap.api.data.schema.Schema;
+import io.cdap.plugin.sendgrid.common.objects.mail.SendGridMail;
 import io.cdap.plugin.sendgrid.common.objects.marketing.MarketingAutomation;
 import io.cdap.plugin.sendgrid.common.objects.marketing.MarketingContacts;
 import io.cdap.plugin.sendgrid.common.objects.marketing.MarketingSegments;
@@ -76,7 +77,10 @@ public class ObjectHelper {
     MarketingSendersContact.class,
     MarketingSendersVerified.class,
     MetricStats.class,
-    StatsStats.class
+    StatsStats.class,
+
+    // custom objects
+    SendGridMail.class
   );
 
  private static Map<String, ObjectInfo> objectsDefinitions;
@@ -136,22 +140,6 @@ public class ObjectHelper {
   }
 
   /**
-   * Gets stream for {@link ObjectDefinition.ObjectDefinitionType#BASE} objects
-   */
-  public static Stream<Class> getObjectStream() {
-    return objects.stream()
-      .filter(x -> getObjectInfo(x).getObjectType() == ObjectDefinition.ObjectDefinitionType.BASE);
-  }
-
-  /**
-   * Gets stream for {@link ObjectDefinition.ObjectDefinitionType#NESTED} objects
-   */
-  public static Stream<Class> getNestedObjectStream() {
-    return objects.stream()
-      .filter(x -> getObjectInfo(x).getObjectType() == ObjectDefinition.ObjectDefinitionType.NESTED);
-  }
-
-  /**
    * Provides entity schema definition
    *
    * @param objectClass entity class, which derived from {@link IBaseObject}
@@ -168,7 +156,7 @@ public class ObjectHelper {
   @Nullable
   public static ObjectInfo getObjectInfo(String internalObjectName) {
     return objectsDefinitions.values().stream()
-      .filter(x -> x.getCdapObjectName().equals(internalObjectName))
+      .filter(x -> !Strings.isNullOrEmpty(x.getCdapObjectName()) && x.getCdapObjectName().equals(internalObjectName))
       .findFirst()
       .orElse(null);
   }

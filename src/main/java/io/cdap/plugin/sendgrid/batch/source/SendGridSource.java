@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.cdap.plugin.sendgrid.source.batch;
+package io.cdap.plugin.sendgrid.batch.source;
 
 import com.google.common.base.Preconditions;
 import io.cdap.cdap.api.annotation.Description;
@@ -30,6 +30,7 @@ import io.cdap.cdap.etl.api.batch.BatchSource;
 import io.cdap.cdap.etl.api.batch.BatchSourceContext;
 import io.cdap.plugin.common.IdUtils;
 import io.cdap.plugin.common.LineageRecorder;
+import io.cdap.plugin.sendgrid.common.config.BaseConfig;
 import io.cdap.plugin.sendgrid.common.helpers.IBaseObject;
 import org.apache.hadoop.io.NullWritable;
 
@@ -41,19 +42,17 @@ import java.util.stream.Collectors;
  * Batch Source plugin
  */
 @Plugin(type = BatchSource.PLUGIN_TYPE)
-@Name(SendGridBatchSource.NAME)
+@Name(BaseConfig.PLUGIN_NAME)
 @Description("Reads data from SendGrid API")
-public class SendGridBatchSource extends BatchSource<NullWritable, IBaseObject, StructuredRecord> {
-  public static final String NAME = "SendGrid";
+public class SendGridSource extends BatchSource<NullWritable, IBaseObject, StructuredRecord> {
+  private final SendGridSourceConfig config;
 
-  private final SendGridBatchConfig config;
-
-  public SendGridBatchSource(SendGridBatchConfig config) {
+  public SendGridSource(SendGridSourceConfig config) {
     this.config = config;
   }
 
   @Override
-  public void prepareRun(BatchSourceContext batchSourceContext) throws Exception {
+  public void prepareRun(BatchSourceContext batchSourceContext) {
     validateConfiguration(batchSourceContext.getFailureCollector());
 
     LineageRecorder lineageRecorder = new LineageRecorder(batchSourceContext, config.referenceName);
@@ -85,7 +84,7 @@ public class SendGridBatchSource extends BatchSource<NullWritable, IBaseObject, 
     } else {
       schema = config.getSchema();
     }
-    emitter.emit(SendGridTransformer.transform(input.getValue(), schema));
+    emitter.emit(SendGridSourceTransformer.transform(input.getValue(), schema));
   }
 
   @SuppressWarnings("ThrowableNotThrown")

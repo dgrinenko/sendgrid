@@ -13,20 +13,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.cdap.plugin.sendgrid.source.batch;
+package io.cdap.plugin.sendgrid.common.objects.mail;
 
-import io.cdap.cdap.etl.api.FailureCollector;
-import io.cdap.plugin.sendgrid.common.config.BaseConfig;
+import com.google.gson.annotations.SerializedName;
 
 /**
- * SendGrid Source Plugin configuration
+ * Person object
  */
-public class SendGridBatchConfig extends BaseConfig {
-  public SendGridBatchConfig(String referenceName) {
-    super(referenceName);
+public class SendGridMailPerson {
+  @SerializedName("email")
+  private String email;
+
+  public SendGridMailPerson(String email) {
+    this.email = email;
   }
 
-  public void validate(FailureCollector failureCollector) {
-    new SendGridBatchConfigValidator(failureCollector, this).validate();
+  public String getEmail() {
+    return email;
   }
 }

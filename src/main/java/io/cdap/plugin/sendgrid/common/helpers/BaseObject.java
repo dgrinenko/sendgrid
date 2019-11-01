@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableMap;
 import io.cdap.cdap.api.data.schema.Schema;
 
 import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -37,9 +38,9 @@ public abstract class BaseObject implements IBaseObject {
     ImmutableMap.Builder<String, Object> fields = new ImmutableMap.Builder<>();
     Map<String, Object> allFields = asMap();
 
-    schema.getFields().stream().map(Schema.Field::getName).forEach(name -> {
-      fields.put(name, allFields.getOrDefault(name, new EmptyObject()));
-    });
+    Objects.requireNonNull(schema.getFields()).stream()
+        .map(Schema.Field::getName)
+        .forEach(name -> fields.put(name, allFields.getOrDefault(name, new EmptyObject())));
 
     return fields.build();
   }

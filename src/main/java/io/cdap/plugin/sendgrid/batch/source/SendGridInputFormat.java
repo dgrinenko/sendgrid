@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.cdap.plugin.sendgrid.source.batch;
+package io.cdap.plugin.sendgrid.batch.source;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -24,7 +24,6 @@ import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,17 +34,16 @@ public class SendGridInputFormat extends InputFormat {
   private static final Gson gson = new GsonBuilder().create();
 
   @Override
-  public List<InputSplit> getSplits(JobContext context) throws IOException, InterruptedException {
+  public List<InputSplit> getSplits(JobContext context) {
     return Collections.singletonList(new SendGridSplit());
   }
 
   @Override
-  public RecordReader createRecordReader(InputSplit split, TaskAttemptContext context)
-    throws IOException, InterruptedException {
+  public RecordReader createRecordReader(InputSplit split, TaskAttemptContext context) {
 
     Configuration conf = context.getConfiguration();
     String serializedConfig = conf.get(SendGridInputFormatProvider.PROPERTY_CONFIG_JSON);
-    SendGridBatchConfig sgConfig  = gson.fromJson(serializedConfig, SendGridBatchConfig.class);
+    SendGridSourceConfig sgConfig  = gson.fromJson(serializedConfig, SendGridSourceConfig.class);
 
     return (sgConfig.isMultiObjectMode())
       ? new SendGridMultiRecordReader()

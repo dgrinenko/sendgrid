@@ -1,0 +1,282 @@
+{
+  "metadata": {
+    "spec-version": "1.5"
+  },
+  "configuration-groups": [
+    {
+      "label": "Basic",
+      "properties": [
+        {
+          "name": "referenceName",
+          "label": "Reference Name",
+          "widget-type": "textbox"
+        },
+        {
+          "name": "authType",
+          "label": "Authentication type",
+          "widget-type": "radio-group",
+          "widget-attributes": {
+            "layout": "inline",
+            "default": "basic",
+            "options": [
+              {
+                "id": "basic",
+                "label": "Basic"
+              },
+              {
+                "id": "api",
+                "label": "API Key"
+              }
+            ]
+          }
+        },
+        {
+          "name": "sendGridApiKey",
+          "label": "API Key",
+          "widget-type": "securekey-text",
+          "widget-attributes": {
+            "placeholder": "SendGrid API Key"
+          }
+        },
+        {
+          "name": "username",
+          "label": "Username",
+          "widget-type": "textbox"
+        },
+        {
+          "name": "password",
+          "label": "Password",
+          "widget-type": "password"
+        },
+        {
+          "name": "from",
+          "label": "From",
+          "widget-type": "textbox",
+          "widget-attributes": {
+            "placeholder": "some@email.com"
+          }
+        },
+        {
+          "name": "recipientAddressSource",
+          "label": "Recipient address source",
+          "widget-type": "radio-group",
+          "widget-attributes": {
+            "layout": "inline",
+            "default": "input",
+            "options": [
+              {
+                "id": "input",
+                "label": "Input Record"
+              },
+              {
+                "id": "config",
+                "label": "Configuration"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipientColumnName",
+          "label": "Column name for recipients addresses",
+          "widget-type": "textbox",
+          "widget-attributes": {
+            "placeholder": "recipients column name"
+          }
+        },
+        {
+          "name": "recipientConfigAddressList",
+          "label": "Recipient address list",
+          "widget-type": "csv",
+          "widget-attributes": {
+            "delimiter": ",",
+            "value-placeholder": "some@mail.com"
+          }
+        },
+        {
+          "name": "mailSubject",
+          "label": "Email subject",
+          "widget-type": "textbox",
+          "widget-attributes": {
+            "placeholder": "email subject"
+          }
+        },
+        {
+          "name": "bodyColumnName",
+          "label": "Email body column name",
+          "widget-type": "textbox",
+          "widget-attributes": {
+            "placeholder": "body column name"
+          }
+        },
+        {
+          "name": "replyTo",
+          "label": "Reply To",
+          "widget-type": "textbox",
+          "widget-attributes": {
+            "placeholder": "some@email.com"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Options",
+      "properties": [
+        {
+          "name": "footerEnabled",
+          "label": "Custom Mail Footer",
+          "widget-type": "toggle",
+          "widget-attributes": {
+            "on": {
+              "value": "true",
+              "label": "On"
+            },
+            "off": {
+              "value": "false",
+              "label": "Off"
+            },
+            "default": "false"
+          }
+        },
+        {
+          "name": "footerHtml",
+          "label": "Footer HTML",
+          "widget-type": "textarea",
+          "widget-attributes": {
+            "rows": 5,
+            "placeholder": "footer message"
+          }
+        },
+        {
+          "name": "sandboxMode",
+          "label": "Sandbox Mode",
+          "widget-type": "toggle",
+          "widget-attributes": {
+            "on": {
+              "value": "true",
+              "label": "On"
+            },
+            "off": {
+              "value": "false",
+              "label": "Off"
+            },
+            "default": "false"
+          }
+        },
+        {
+          "name": "clickTracking",
+          "label": "Click Tracking",
+          "widget-type": "toggle",
+          "widget-attributes": {
+            "on": {
+              "value": "true",
+              "label": "On"
+            },
+            "off": {
+              "value": "false",
+              "label": "Off"
+            },
+            "default": "false"
+          }
+        },
+        {
+          "name": "openTracking",
+          "label": "Open Tracking",
+          "widget-type": "toggle",
+          "widget-attributes": {
+            "on": {
+              "value": "true",
+              "label": "On"
+            },
+            "off": {
+              "value": "false",
+              "label": "Off"
+            },
+            "default": "false"
+          }
+        },
+        {
+          "name": "subscriptionTracking",
+          "label": "Subscription Tracking",
+          "widget-type": "toggle",
+          "widget-attributes": {
+            "on": {
+              "value": "true",
+              "label": "On"
+            },
+            "off": {
+              "value": "false",
+              "label": "Off"
+            },
+            "default": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "name": "schema",
+      "widget-type": "schema",
+      "widget-attributes": {
+        "schema-types": [
+          "string"
+        ],
+        "schema-default-type": "string"
+      }
+    }
+  ],
+  "filters": [
+    {
+      "name": "AuthTypeBasicFilter",
+      "condition": {
+        "expression": "authType == 'basic'"
+      },
+      "show": [
+        {
+          "name": "username",
+          "type": "property"
+        },
+        {
+          "name": "password",
+          "type": "property"
+        }
+      ]
+    },
+    {
+      "name": "AuthTypeAPIKeyFilter",
+      "condition": {
+       "expression": "authType == 'api'"
+      },
+      "show": [
+        {
+          "name": "sendGridApiKey",
+          "type": "property"
+        }
+      ]
+    },
+    {
+      "name": "recipientSourceFilter",
+      "condition": {
+       "expression": "recipientAddressSource == 'input'"
+      },
+      "show": [
+        {
+          "name": "recipientColumnName",
+          "type": "property"
+        }
+      ]
+    },
+    {
+      "name": "recipientSourceFilterConfig",
+      "condition": {
+       "expression": "recipientAddressSource == 'config'"
+      },
+      "show": [
+        {
+          "name": "recipientConfigAddressList",
+          "type": "property"
+        }
+      ]
+    }
+  ]
+}

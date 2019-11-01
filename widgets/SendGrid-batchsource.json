@@ -235,6 +235,10 @@
                 "label": "message_count"
               },
               {
+                "id": "metrics",
+                "label": "metrics"
+              },
+              {
                 "id" : "name",
                 "label": "name"
               },
@@ -291,10 +295,14 @@
                 "label": "zip"
               }
             ],
-            "delimiter": ",",
-            "defualt": ""
+            "delimiter": ","
           }
-        },
+        }
+      ]
+    },
+    {
+      "label": "Options",
+      "properties": [
         {
           "name": "start_date",
           "label": "Start Date",
@@ -342,45 +350,15 @@
     },
     {
       "name": "AuthTypeAPIKeyFilter",
-      "condition": "authType == 'api'",
+      "condition": {
+        "expression": "authType == 'api'"
+      },
       "show": [
         {
           "name": "sendGridApiKey",
           "type": "property"
         }
       ]
-    },
-    {
-      "name": "MarketingFilter",
-      "condition": "dataSourceTypes.includes('campaigns')",
-      "show": [
-        {
-          "name": "dataSourceMarketing",
-          "type": "property"
-        }
-      ]
-    },
-    {
-      "name": "StatsFilter",
-      "condition": "dataSourceTypes.includes('stats')",
-      "show": [
-        {
-          "name": "dataSourceStats",
-          "type": "property"
-        }
-      ]
-    },
-    {
-      "name": "SuppressionsFilter",
-      "condition": "dataSourceTypes.includes('suppressions')",
-      "show": [
-        {
-          "name": "dataSourceSuppressions",
-          "type": "property"
-        }
-      ]
     }
-
   ]
-
 }

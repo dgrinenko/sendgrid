@@ -23,7 +23,8 @@ import java.util.Arrays;
 public enum DataSourceGroupType {
   Marketing("MarketingCampaign"),
   Stats("Statistic"),
-  Suppressions("suppression");
+  Suppressions("suppression"),
+  Other("other");
 
   private String value;
 

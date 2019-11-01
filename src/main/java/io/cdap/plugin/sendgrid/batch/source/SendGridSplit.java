@@ -13,14 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.cdap.plugin.sendgrid.source.batch;
+package io.cdap.plugin.sendgrid.batch.source;
 
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.InputSplit;
 
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.IOException;
 
 /**
  * A no-op split
@@ -31,22 +30,22 @@ public class SendGridSplit extends InputSplit implements Writable {
   }
 
   @Override
-  public void write(DataOutput dataOutput) throws IOException {
+  public void write(DataOutput dataOutput) {
 
   }
 
   @Override
-  public void readFields(DataInput dataInput) throws IOException {
+  public void readFields(DataInput dataInput) {
 
   }
 
   @Override
-  public long getLength() throws IOException, InterruptedException {
+  public long getLength() {
     return 0;
   }
 
   @Override
-  public String[] getLocations() throws IOException, InterruptedException {
+  public String[] getLocations() {
     return new String[0];
   }
 }
