@@ -1,0 +1,6 @@
+{
+  "authType": "basic",
+  "sendGridApiKey": "",
+  "authUserName": "test user",
+  "authPassword": "test pass"
+}

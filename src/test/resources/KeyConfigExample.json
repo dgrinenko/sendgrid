@@ -1,0 +1,6 @@
+{
+  "authType": "api",
+  "sendGridApiKey": "some-api-key",
+  "authUserName": "",
+  "authPassword": ""
+}

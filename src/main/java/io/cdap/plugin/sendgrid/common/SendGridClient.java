@@ -16,6 +16,7 @@
 package io.cdap.plugin.sendgrid.common;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -30,6 +31,7 @@ import io.cdap.plugin.sendgrid.common.helpers.ObjectInfo;
 import io.cdap.plugin.sendgrid.common.objects.BasicResult;
 import io.cdap.plugin.sendgrid.common.objects.SendGridAuthType;
 import io.cdap.plugin.sendgrid.common.objects.mail.SendGridMail;
+import io.cdap.plugin.sendgrid.common.objects.marketing.MarketingNewContacts;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
@@ -121,7 +123,7 @@ public class SendGridClient {
     request.setMethod(method);
     request.setEndpoint(endpoint);
 
-    if (method == Method.POST && !Strings.isNullOrEmpty(data)) {
+    if ((method == Method.POST || method == Method.PUT) && !Strings.isNullOrEmpty(data)) {
       request.setBody(data);
     }
 
@@ -282,6 +284,34 @@ public class SendGridClient {
         objectInfo.getApiResponseType().name()
       ));
     }
+  }
+
+  /**
+   * Create contacts
+   *
+   * @param contacts list of contacts to be created
+   * @throws IOException if any issue with query the API happen
+   */
+  public void createContacts(MarketingNewContacts contacts) throws IOException {
+     ObjectInfo objectInfo = ObjectHelper.getObjectInfoFromClass(MarketingNewContacts.class);
+     String data = gson.toJson(contacts);
+     makeApiRequest(Method.PUT, objectInfo.getSendGridAPIUrl(), null, data);
+  }
+
+  /**
+   * Delete contacts by their id
+   *
+   * @param ids list of contact id
+   * @throws IOException if any issue with query the API happen
+   */
+  public void deleteContacts(List<String> ids) throws IOException {
+    ObjectInfo objectInfo = ObjectHelper.getObjectInfoFromClass(MarketingNewContacts.class);
+    String idsToRemove = String.join(",", ids);
+    Map<String, String> args = new ImmutableMap.Builder<String, String>()
+            .put("delete_all_contacts", "false")
+            .put("ids", idsToRemove)
+            .build();
+    makeApiRequest(Method.DELETE, objectInfo.getSendGridAPIUrl(), args, null);
   }
 
   /**

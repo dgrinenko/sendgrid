@@ -1,0 +1,10 @@
+{
+  "dataSourceTypes": "MarketingCampaign,Statistic,Suppression",
+  "dataSourceMarketing": "SingleSends,Senders",
+  "dataSourceStats": "CategoryStats",
+  "dataSourceSuppressions": "Bounces,GlobalUnsubscribes",
+  "dataSourceFields": "address,city,contracts_count",
+  "startDate": "2019-09-18",
+  "endDate": "2019-09-21",
+  "statCategories": "spam"
+}

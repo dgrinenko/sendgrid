@@ -90,6 +90,31 @@ public class ObjectHelper {
    buildSchemaDefinition();
  }
 
+ public static ObjectInfo getObjectInfoFromClass(Class object) {
+     ObjectDefinition objectDefinition = (ObjectDefinition) object.getAnnotation(ObjectDefinition.class);
+
+     List<ObjectFieldInfo> objectFieldInfos = Arrays.stream(object.getDeclaredFields()).map(x -> {
+         try {
+             String name = x.getAnnotation(SerializedName.class).value();
+             ObjectFieldDefinition objectFieldDefinition = x.getAnnotation(ObjectFieldDefinition.class);
+
+             return new ObjectFieldInfo(name, objectFieldDefinition.FieldType(), objectFieldDefinition.NestedClass());
+         } catch (NullPointerException e) {
+             return null;  // Ignore non-annotated fields
+         }
+     }).filter(Objects::nonNull).collect(Collectors.toList());
+     return new ObjectInfo(
+             objectDefinition.Name(),
+             objectFieldInfos,
+             objectDefinition.APIUrl(),
+             objectDefinition.APIResponseType(),
+             object,
+             objectDefinition.Group(),
+             Arrays.asList(objectDefinition.RequiredArguments()),
+             objectDefinition.ObjectType()
+     );
+ }
+
   /**
    * Create schema definition for annotated objects
    */
@@ -100,30 +125,7 @@ public class ObjectHelper {
     ImmutableMap.Builder<String, ObjectInfo> builder = new ImmutableMap.Builder<>();
     objects.forEach(object -> {
       try {
-        ObjectDefinition objectDefinition = (ObjectDefinition) object.getAnnotation(ObjectDefinition.class);
-
-        List<ObjectFieldInfo> objectFieldInfos = Arrays.stream(object.getDeclaredFields()).map(x -> {
-          try {
-            String name = x.getAnnotation(SerializedName.class).value();
-            ObjectFieldDefinition objectFieldDefinition = x.getAnnotation(ObjectFieldDefinition.class);
-
-            return new ObjectFieldInfo(name, objectFieldDefinition.FieldType(), objectFieldDefinition.NestedClass());
-          } catch (NullPointerException e) {
-            return null;  // Ignore non-annotated fields
-          }
-        }).filter(Objects::nonNull).collect(Collectors.toList());
-
-        builder.put(object.getName(), new ObjectInfo(
-          objectDefinition.Name(),
-          objectFieldInfos,
-          objectDefinition.APIUrl(),
-          objectDefinition.APIResponseType(),
-          object,
-          objectDefinition.Group(),
-          Arrays.asList(objectDefinition.RequiredArguments()),
-          objectDefinition.ObjectType()
-        ));
-
+        builder.put(object.getName(), getObjectInfoFromClass(object));
       } catch (NullPointerException e) {
         throw new RuntimeException(String.format("Object with name %s not annotated with %s", object.getName(),
           ObjectDefinition.class.getName()));

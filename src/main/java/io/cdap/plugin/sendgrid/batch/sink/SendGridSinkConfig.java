@@ -164,8 +164,32 @@ public class SendGridSinkConfig extends BaseConfig {
   }
 
   public void validate(Schema schema) {
-    //ToDo 10/29/2019/hapyl: implement this
-    assert schema != null;
+    if (schema == null) {
+      throw new IllegalArgumentException("Input schema cannot be empty");
+    }
+
+    if (getRecipientAddressSource() == ToAddressSource.INPUT) {
+      Schema.Field recipient = schema.getField(recipientColumnName);
+      if (recipient == null) {
+        throw new IllegalArgumentException(String.format("Plugin is configured to use column '%s' for" +
+          " recipient addresses, but input schema did not provide such column", recipientColumnName));
+      }
+
+      if (recipient.getSchema().getType() != Schema.Type.STRING) {
+        throw new IllegalArgumentException(String.format("The input schema column '%s' expected to be of type STRING",
+          recipientColumnName));
+      }
+    }
+
+    Schema.Field body = schema.getField(bodyColumnName);
+    if (body == null) {
+      throw new IllegalArgumentException(String.format("Plugin requires column '%s' for" +
+        " recipient addresses, but input schema did not provide such column", recipientColumnName));
+    }
+    if (body.getSchema().getType() != Schema.Type.STRING) {
+      throw new IllegalArgumentException(String.format("The input schema column '%s' expected to be of type STRING",
+        bodyColumnName));
+    }
   }
 
   public String getFrom() {

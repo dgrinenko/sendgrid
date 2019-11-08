@@ -1,0 +1,15 @@
+{
+  "from": "test@email.com",
+  "replyTo": "reply@email.com",
+  "footerEnable": "true",
+  "footerHTML": "footer",
+  "sandboxMode": "true",
+  "clickTracking": "true",
+  "openTracking": "true",
+  "subscriptionTracking": "true",
+  "recipientAddressSource": "input",
+  "recipientConfigAddressList": "test1@email.com,test2@email.com",
+  "recipientColumnName": "column1",
+  "bodyColumnName": "column2",
+  "mailSubject": "subject"
+}

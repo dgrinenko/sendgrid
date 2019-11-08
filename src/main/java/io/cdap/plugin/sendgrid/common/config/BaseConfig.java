@@ -40,7 +40,7 @@ public abstract class BaseConfig extends ReferencePluginConfig {
   @Macro
   private String authType;
 
-  @Name((PROPERTY_SENDGRID_API_KEY))
+  @Name(PROPERTY_SENDGRID_API_KEY)
   @Description("The SendGrid API Key taken from the SendGrid account")
   @Macro
   @Nullable

@@ -193,7 +193,7 @@ public class SendGridSourceConfig extends BaseConfig {
       builder.put(PROPERTY_END_DATE, endDate);
     }
     if (!Strings.isNullOrEmpty(statCategories)) {
-      builder.put(PROPERTY_END_DATE, statCategories);
+      builder.put(PROPERTY_STAT_CATEGORIES, statCategories);
     }
     return builder.build();
   }
