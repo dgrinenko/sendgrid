@@ -163,33 +163,37 @@ public class SendGridSinkConfig extends BaseConfig {
     new SendGridSinkConfigValidator(failureCollector, this).validate();
   }
 
+  private void validateField(Schema.Field field, String name) {
+    if (field == null) {
+      throw new IllegalArgumentException(String.format("Plugin is configured to use column '%s' for" +
+          " recipient addresses, but input schema did not provide such column", recipientColumnName));
+    }
+
+    Schema fieldSchema = field.getSchema();
+    if (fieldSchema.getType() == Schema.Type.UNION) {
+      if (fieldSchema.getUnionSchemas().stream().noneMatch(x -> x.getType() == Schema.Type.STRING)) {
+        throw new IllegalArgumentException(String.format("The input schema column '%s' expected to be of type STRING",
+            name));
+      }
+      return;
+    }
+
+    if (fieldSchema.getType() != Schema.Type.STRING) {
+      throw new IllegalArgumentException(String.format("The input schema column '%s' expected to be of type STRING",
+          name));
+    }
+  }
+
   public void validate(Schema schema) {
     if (schema == null) {
       throw new IllegalArgumentException("Input schema cannot be empty");
     }
 
     if (getRecipientAddressSource() == ToAddressSource.INPUT) {
-      Schema.Field recipient = schema.getField(recipientColumnName);
-      if (recipient == null) {
-        throw new IllegalArgumentException(String.format("Plugin is configured to use column '%s' for" +
-          " recipient addresses, but input schema did not provide such column", recipientColumnName));
-      }
-
-      if (recipient.getSchema().getType() != Schema.Type.STRING) {
-        throw new IllegalArgumentException(String.format("The input schema column '%s' expected to be of type STRING",
-          recipientColumnName));
-      }
+      validateField(schema.getField(recipientColumnName), recipientColumnName);
     }
 
-    Schema.Field body = schema.getField(bodyColumnName);
-    if (body == null) {
-      throw new IllegalArgumentException(String.format("Plugin requires column '%s' for" +
-        " recipient addresses, but input schema did not provide such column", recipientColumnName));
-    }
-    if (body.getSchema().getType() != Schema.Type.STRING) {
-      throw new IllegalArgumentException(String.format("The input schema column '%s' expected to be of type STRING",
-        bodyColumnName));
-    }
+    validateField(schema.getField(bodyColumnName), bodyColumnName);
   }
 
   public String getFrom() {
