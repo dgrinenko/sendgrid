@@ -32,13 +32,17 @@ section of the Settings page.
 
 **Content:** Optional content of the email. Defaults to empty.
 
+**Include Workflow Token:** Workflow tokens contain data such as counters, statuses and metrics, that are passed 
+between the nodes of a pipeline. This config determines whether to include the contents of the workflow token in the 
+email message. Defaults to false.
+
 
 Example
 -------
 This example sends an email from 'team-ops@example.com' to 'team-alerts@example.com' whenever a run fails:
 
     {
-        "name": "Sendgrid",
+        "name": "EmailBySendgrid",
         "type": "postaction",
         "properties": {
             "apiKey": "xyz",
@@ -46,6 +50,7 @@ This example sends an email from 'team-ops@example.com' to 'team-alerts@example.
             "to": "team-alerts@example.com",
             "subject": "Pipeline Failure ${logicalStartTime(yyyy-MM-dd)}",
             "message": "The pipeline run failed.",
-            "runCondition": "failure"
+            "runCondition": "failure",
+            "includeWorkflowToken": "false"
         }
     }

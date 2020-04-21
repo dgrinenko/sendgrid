@@ -53,7 +53,24 @@
           "widget-type": "textarea",
           "label": "Content",
           "name": "content"
+        },
+        {
+          "widget-type": "toggle",
+          "label": "Include Workflow Token",
+          "name": "includeWorkflowToken",
+          "widget-attributes": {
+            "on": {
+              "value": "true",
+              "label": "Yes"
+            },
+            "off": {
+              "value": "false",
+              "label": "No"
+            },
+            "default": "false"
+          }
         }
+
       ]
     }
   ],
