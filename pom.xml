@@ -30,6 +30,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <cdap.version>6.1.1</cdap.version>
     <cdap.plugin.version>2.2.0</cdap.plugin.version>
+    <javamail.version>1.4.1</javamail.version>
     <main.basedir>${project.basedir}</main.basedir>
   </properties>
 
@@ -94,6 +95,11 @@
       <groupId>io.cdap.plugin</groupId>
       <artifactId>hydrator-common</artifactId>
       <version>${cdap.plugin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>${javamail.version}</version>
     </dependency>
   </dependencies>
 

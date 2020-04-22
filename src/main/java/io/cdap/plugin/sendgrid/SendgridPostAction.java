@@ -26,14 +26,19 @@ import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Macro;
 import io.cdap.cdap.api.annotation.Name;
 import io.cdap.cdap.api.annotation.Plugin;
+import io.cdap.cdap.api.workflow.WorkflowToken;
+import io.cdap.cdap.etl.api.FailureCollector;
 import io.cdap.cdap.etl.api.PipelineConfigurer;
 import io.cdap.cdap.etl.api.batch.BatchActionContext;
 import io.cdap.cdap.etl.api.batch.PostAction;
 import io.cdap.plugin.common.batch.action.ConditionConfig;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 
 /**
  * SendgridPostAction implementation of {@link PostAction}.
@@ -53,36 +58,89 @@ public final class SendgridPostAction extends PostAction {
    * Plugin config for Sendgrid post action.
    */
   public static class Config extends ConditionConfig {
+    private static final String FROM = "from";
+    private static final String TO = "to";
+    private static final String SUBJECT = "subject";
+    private static final String CONTENT = "content";
+    private static final String API_KEY = "apiKey";
+    private static final String INCLUDE_WORKFLOW_TOKEN = "includeWorkflowToken";
+
     @Description("The address to send the email from.")
-    @Name("from")
+    @Name(FROM)
     @Macro
     private String from;
 
     @Description("The subject of the email")
-    @Name("subject")
+    @Name(SUBJECT)
     @Macro
     private String subject;
 
     @Description("The address to send the email to.")
-    @Name("to")
+    @Name(TO)
     @Macro
     private String to;
 
     @Description("The SendGrid API Key. After logging into your Sendgrid account, you can create a key in the " +
       "API keys section of the Settings page.")
-    @Name("apiKey")
+    @Name(API_KEY)
     @Macro
     private String apiKey;
 
     @Description("Optional content of the email. Defaults to empty.")
-    @Name("content")
+    @Name(CONTENT)
     @Macro
     @Nullable
     private String content;
 
+    @Name(INCLUDE_WORKFLOW_TOKEN)
+    @Description("Workflow tokens contain data such as counters, statuses and metrics, that are passed between the " +
+      "nodes of a pipeline. This config determines whether to include the contents of the workflow token in the " +
+      "email message. Defaults to false.")
+    @Macro
+    @Nullable
+    private Boolean includeWorkflowToken;
+
     public Config() {
       if (content == null) {
         content = "";
+      }
+      if (includeWorkflowToken == null) {
+        includeWorkflowToken = false;
+      }
+    }
+
+    public void validate(FailureCollector collector) {
+      if (!containsMacro(FROM)) {
+        try {
+          InternetAddress[] addresses = InternetAddress.parse(from);
+          if (addresses.length != 1) {
+            collector.addFailure(
+              String.format("Exactly one sender is supported, but found %s.", addresses.length),
+              "Only specify one sender email address.").withConfigProperty(FROM);
+          }
+        } catch (AddressException e) {
+          collector.addFailure(
+            String.format("%s is an invalid sender email address. Reason: %s", from, e.getMessage()),
+            "Enter a valid email address for the sender."
+          ).withConfigProperty(FROM);
+        }
+      }
+
+      if (!containsMacro(TO)) {
+        try {
+          InternetAddress[] addresses = InternetAddress.parse(to);
+          if (addresses.length != 1) {
+            collector.addFailure(
+              String.format("Exactly one recipient is supported, but found %s.", addresses.length),
+              "Only specify one recipient email address."
+            ).withConfigProperty(TO);
+          }
+        } catch (AddressException e) {
+          collector.addFailure(
+            String.format("%s is an invalid recipient email address. Reason: %s", to, e.getMessage()),
+            "Enter a valid email address for the recipient."
+          ).withConfigProperty(TO);
+        }
       }
     }
   }
@@ -94,6 +152,8 @@ public final class SendgridPostAction extends PostAction {
   @Override
   public void configurePipeline(PipelineConfigurer configurer) {
     super.configurePipeline(configurer);
+    FailureCollector failureCollector = configurer.getStageConfigurer().getFailureCollector();
+    config.validate(failureCollector);
   }
 
   @Override
@@ -108,7 +168,17 @@ public final class SendgridPostAction extends PostAction {
     Email from = new Email(config.from);
     String subject = config.subject;
     Email to = new Email(config.to);
-    Content content = new Content("text/plain", config.content);
+    StringBuilder emailText = new StringBuilder(config.content)
+      .append("\n\n");
+    if (config.includeWorkflowToken) {
+      WorkflowToken token = context.getToken();
+      emailText.append("\nUSER Workflow Tokens:\n")
+        .append(token.getAll(WorkflowToken.Scope.USER))
+        .append("\nSYSTEM Workflow Tokens:\n")
+        .append(token.getAll(WorkflowToken.Scope.SYSTEM))
+        .append("\n");
+    }
+    Content content = new Content("text/plain", emailText.toString());
     Mail mail = new Mail(from, subject, to, content);
 
     SendGrid sg = new SendGrid(config.apiKey);
