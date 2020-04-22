@@ -65,7 +65,8 @@ public final class SendgridPostAction extends PostAction {
     private static final String API_KEY = "apiKey";
     private static final String INCLUDE_WORKFLOW_TOKEN = "includeWorkflowToken";
 
-    @Description("The address to send the email from.")
+    @Description("The address to send the email from. The identity of this email must be verified with Sendgrid " +
+      "using one of the options available at https://sendgrid.com/docs/for-developers/sending-email/sender-identity/.")
     @Name(FROM)
     @Macro
     private String from;
