@@ -24,7 +24,8 @@ If set to 'failure', the action will only be executed if the pipeline run failed
 **API Key**: The SendGrid API Key. After logging into your Sendgrid account, you can create a key in the API keys 
 section of the Settings page.
 
-**From:** The address to send the email from.
+**From:** The address to send the email from. The identity of this email must be verified with Sendgrid using one of 
+the options available at https://sendgrid.com/docs/for-developers/sending-email/sender-identity/.
 
 **To:** The address to send the email to.
 
