@@ -1,0 +1,78 @@
+{
+  "metadata": {
+    "spec-version": "1.5"
+  },
+  "configuration-groups": [
+    {
+      "label": "Email Properties",
+      "properties": [
+        {
+          "widget-type": "radio-group",
+          "label": "Run Condition",
+          "name": "runCondition",
+          "widget-attributes": {
+            "layout": "inline",
+            "default": "completion",
+            "options": [
+              {
+                "id": "completion",
+                "label": "Completion"
+              },
+              {
+                "id": "success",
+                "label": "Success"
+              },
+              {
+                "id": "failure",
+                "label": "Failure"
+              }
+            ]
+          }
+        },
+        {
+          "widget-type": "password",
+          "label": "API Key",
+          "name": "apiKey"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "From",
+          "name": "from"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "To",
+          "name": "to"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Subject",
+          "name": "subject"
+        },
+        {
+          "widget-type": "textarea",
+          "label": "Content",
+          "name": "content"
+        },
+        {
+          "widget-type": "toggle",
+          "label": "Include Workflow Token",
+          "name": "includeWorkflowToken",
+          "widget-attributes": {
+            "on": {
+              "value": "true",
+              "label": "Yes"
+            },
+            "off": {
+              "value": "false",
+              "label": "No"
+            },
+            "default": "false"
+          }
+        }
+
+      ]
+    }
+  ],
+  "outputs": []
+}
